@@ -37,7 +37,7 @@ class Login {
                     //token
                         const id = result.id
                         const token = jwt.sign({id},process.env.SECRET,{
-                            expiresIn: 300 //FIVE MINUTES
+                            expiresIn: 500 //FIVE MINUTES
                         })
 
                         var dataAccess = {

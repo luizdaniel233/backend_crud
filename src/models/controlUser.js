@@ -13,7 +13,7 @@ class controlUser{
                 console.log(erro)
                 res.status(404).json(erro)
             }else{
-                console.log(resultado)
+                //console.log(resultado)
                 res.status(200).json(resultado)
             }
         })

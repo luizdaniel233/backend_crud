@@ -9,7 +9,7 @@ class verify{
                 req.socket.remoteAddress || // Recupera o endereço através do socket TCP
                 req.connection.socket.remoteAddress // Recupera o endereço através do socket da conexão
         
-        //console.log(req)
+        console.log(req)
         const token = req.headers['authorization'];
         if (!token) {
             const output = { "ip": remoteIp,auth: false, message: 'No token provided.' }
