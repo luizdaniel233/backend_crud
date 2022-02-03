@@ -3,10 +3,10 @@ class User{
 
     init(conexao){
         this.conexao = conexao;
-        this.criarUser();
+        this.createUser();
     }
 
-    criarUser(){
+    createUser(){
         
         const sql = 'CREATE TABLE IF NOT EXISTS User' +
         '(id int NOT NULL AUTO_INCREMENT,email varchar(100) NOT NULL,'+
@@ -22,8 +22,6 @@ class User{
             }
         })
     }
-
-
 }
 
 module.exports = new User

@@ -13,7 +13,7 @@ module.exports = () =>{
     app.use(body.urlencoded({extended:true}))
 
     consign()
-        .include('./src/controllers')
+        .include('./src/controller')
         .into(app);
 
     return app

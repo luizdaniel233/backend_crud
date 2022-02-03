@@ -1,11 +1,12 @@
 const db = require('../database/db')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
-require("dotenv-safe").config();
+require("dotenv").config();
 
 class Login {
 
-    logon(email,senha,res,remoteIp){
+    login(email,senha,res,remoteIp){
+        console.log(email,senha)
         let result = [] 
         let value = true
         let senhaDB = ''
@@ -59,10 +60,11 @@ class Login {
                 }
             }
         })
-            
-        
     }
-       
+    
+    logout(res){
+        res.status(200).json({auth:false,token:null})
+    }
 
 }
 

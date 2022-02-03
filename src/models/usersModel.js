@@ -1,10 +1,53 @@
 const db = require('../database/db')
 const bcrypt = require('bcrypt')
-const validaData = require('../models/validaData')
+const validaData = require('../auth');
 
 class controlUser{
 
-    listUsers(res){
+    user(id,res){
+
+        const sql = `SELECT * FROM User WHERE id = ${id}`
+        db.query(sql,(erro,resultado) => {
+            if(erro){
+                res.status(422).json(erro)
+            }else{
+                if(resultado.length > 0){
+                    const dadosUser = {
+                        id: resultado[0].id,
+                        email: resultado[0].email, 
+                        name: resultado[0].name,
+                        lastname: resultado[0].lastname,        
+                        admin: resultado[0].admin
+                    }
+                    //console.log(resultado)
+                    res.status(200).json(dadosUser)
+                }else{
+                    res.status(404).json({erro:"Not Found User!"}) 
+                }
+                
+            }
+        })
+
+    }
+
+    updateUser(data,res){
+
+        const sql = `UPDATE User SET email = '${data.email}',` +
+        `name = '${data.name}',lastname = '${data.lastname}',` +
+        `admin  = ${data.admin} WHERE id = ${data.id}`
+
+        db.query(sql,(erro,resultado) => {
+            if(erro){
+                res.status(401).json(erro)
+            }else{
+                res.status(201).json(resultado)
+            }
+        })
+
+
+    }
+
+    listUser(res){
 
         const sql = 'SELECT * FROM User'
 
@@ -20,7 +63,7 @@ class controlUser{
 
     }
 
-    delete(id,res){
+    deleteUser(id,res){
 
         const sql = `DELETE FROM User WHERE id = ${id}`
 
@@ -54,7 +97,7 @@ class controlUser{
             }else{
 
                 if(resultado.length == 0){
-                    if ((dadosUser.password === data.confirmpassword) && (validaData.validaSenha(dadosUser.password))){
+                    if ((dadosUser.password === data.confirmpassword) && (validaData.verifyPassword(dadosUser.password))){
                         
                         sql =  'INSERT INTO user SET ?'
                         dadosUser.password = await controlUser.gerarSenhaHash(dadosUser.password);

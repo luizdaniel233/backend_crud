@@ -9,26 +9,42 @@ class verify{
                 req.socket.remoteAddress || // Recupera o endereço através do socket TCP
                 req.connection.socket.remoteAddress // Recupera o endereço através do socket da conexão
         
-        console.log(req)
         const token = req.headers['authorization'];
+
         if (!token) {
             const output = { "ip": remoteIp,auth: false, message: 'No token provided.' }
             console.log(output)
             return res.status(401).json(output);
         }
-        jwt.verify(token, process.env.SECRET, function(err, decoded) {
-        if (err){
-            const output = { "ip": remoteIp,auth: false, message: 'Failed to authenticate token.' }
-            console.log(output)
-            return res.status(500).json(output);
-        } 
         
-        // se tudo estiver ok, salva no request para uso posterior
+        jwt.verify(token, process.env.SECRET, function(err, decoded) {
+        
+            if (err){
+                const output = { "ip": remoteIp,auth: false, message: 'Failed to authenticate token.' }
+                console.log(output)
+                return res.status(500).json(output);
+            } 
+            
+            // se tudo estiver ok, salva no request para uso posterior
         req.userId = decoded.id;
-        console.log(req.userId)
         console.log("Token Válido!")
         next();
+
         });
+    }
+
+    verifyPassword(senha){
+        let result = true;
+
+        if((senha.length > 7) && (senha.length < 64)){
+            result = true;
+            return result;
+        }else{
+            if(senha.length < 8){
+                result = false;
+                return result;
+            }
+        }
     }
 }
 
