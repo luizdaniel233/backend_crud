@@ -38,11 +38,10 @@ class controlUser{
 
     async createUser(data,res){
         
-        console.log(data)
         const dadosUser = {
             email: data.email, 
             name: data.name,
-            lastName: data.lastName,        
+            lastname: data.lastname,        
             password: data.password,      
             admin: data.admin
         }
@@ -58,7 +57,7 @@ class controlUser{
                     if ((dadosUser.password === data.confirmpassword) && (validaData.validaSenha(dadosUser.password))){
                         
                         sql =  'INSERT INTO user SET ?'
-                        dadosUser.password = await Create.gerarSenhaHash(dadosUser.password);
+                        dadosUser.password = await controlUser.gerarSenhaHash(dadosUser.password);
 
                         db.query(sql,dadosUser,(erro,resultado) => {
                             
