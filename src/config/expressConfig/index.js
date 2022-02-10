@@ -1,20 +1,35 @@
+const http = require('http')
+const { Server } = require("socket.io")
 const express = require('express')
 const body = require('body-parser')
 const consign = require('consign')
+const cors = require('cors')
 
-module.exports = () =>{
+const app = express()
 
-    const app = express()
-    
-    var cors = require('cors')
-    app.use(cors())
+app.use(cors())
 
-    app.use(body.json())
-    app.use(body.urlencoded({extended:true}))
+const serverHttp = http.createServer(app)
 
-    consign()
-        .include('./src/controller')
-        .into(app);
+const io = new Server(serverHttp,{
+    cors: {
+        origin: "*",
+    },
+});
 
-    return app
-}
+io.on("connection", socket => {
+    console.log(`Usuário conectado no socket Id:${socket.id}`)
+});
+
+//app.use(express.json());
+
+app.use(body.json())
+app.use(body.urlencoded({extended:true}))
+
+consign()
+    .then('./src/models')
+    .include('./src/controller')
+    .into(app,io);
+
+module.exports = { serverHttp,io } 
+

@@ -1,6 +1,7 @@
 const db = require('../database/db')
 const bcrypt = require('bcrypt')
 const validaData = require('../auth');
+//const  = require('../config/expressConfig')
 
 class controlUser{
 
@@ -47,20 +48,19 @@ class controlUser{
 
     }
 
-    listUser(res){
-
+    async listUser(res){
         const sql = 'SELECT * FROM User'
-
         db.query(sql,(erro,resultado) => {
             if(erro){
                 console.log(erro)
                 res.status(404).json(erro)
             }else{
                 //console.log(resultado)
+                //socketRes = resultado
                 res.status(200).json(resultado)
             }
         })
-
+        
     }
 
     deleteUser(id,res){
@@ -79,7 +79,7 @@ class controlUser{
 
     }
 
-    async createUser(data,res){
+    async createUser(data,res,io){
         
         const dadosUser = {
             email: data.email, 
@@ -88,6 +88,9 @@ class controlUser{
             password: data.password,      
             admin: data.admin
         }
+
+        io.emit("new_user",dadosUser)
+        
         var  sql = `SELECT * FROM User WHERE email = '${dadosUser.email}'`
 
         db.query(sql,async (erro,resultado) => {
@@ -108,7 +111,6 @@ class controlUser{
                                 console.log(erro)
                                 res.status(422).json(erro)
                             }else{
-                                console.log(dadosUser)
                                 res.status(201).json(resultado)
                             }
                         })
@@ -123,6 +125,7 @@ class controlUser{
                 }
             }
         })
+        
     }
 
     static gerarSenhaHash(data){
@@ -131,6 +134,7 @@ class controlUser{
         return bcrypt.hash(data,custoHash)
     }
 
+    
 }
 
 module.exports = new controlUser

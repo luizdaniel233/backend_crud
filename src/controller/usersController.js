@@ -1,9 +1,10 @@
 const controlUser = require('../models/usersModel')
 const { verifyJWT } = require('../auth');
-module.exports = app =>{
+const { io } = require('../config/expressConfig');
+module.exports = (app,io) =>{
 
-    app.get('/users',verifyJWT,(req,res,next) => {
-        controlUser.listUser(res)
+    app.get('/users',async (req,res,next) => {
+        await controlUser.listUser(res)
     })
 
     app.get('/users/:id',verifyJWT,(req,res) =>{
@@ -11,9 +12,9 @@ module.exports = app =>{
         controlUser.user(id,res)
     })
 
-    app.post('/users/signup',verifyJWT,(req,res,next) => {
+    app.post('/users/signup',verifyJWT,async (req,res,next) => {
         const data = req.body;
-        controlUser.createUser(data,res)
+        await controlUser.createUser(data,res,io)
     })
 
     app.put('/users/update',verifyJWT,(req,res) => {
