@@ -80,8 +80,9 @@ class controlUser{
     }
 
     async createUser(data,res,io){
-        
-        const dadosUser = {
+
+        var dadosUser = {
+            id:0,
             email: data.email, 
             name: data.name,
             lastname: data.lastname,        
@@ -89,9 +90,8 @@ class controlUser{
             admin: data.admin
         }
 
-        io.emit("new_user",dadosUser)
         
-        var  sql = `SELECT * FROM User WHERE email = '${dadosUser.email}'`
+        var sql = `SELECT * FROM User WHERE email = '${dadosUser.email}'`
 
         db.query(sql,async (erro,resultado) => {
 
@@ -102,19 +102,30 @@ class controlUser{
                 if(resultado.length == 0){
                     if ((dadosUser.password === data.confirmpassword) && (validaData.verifyPassword(dadosUser.password))){
                         
-                        sql =  'INSERT INTO user SET ?'
-                        dadosUser.password = await controlUser.gerarSenhaHash(dadosUser.password);
+                        sql = 'SELECT * FROM User'
 
-                        db.query(sql,dadosUser,(erro,resultado) => {
-                            
+                        db.query(sql, async(erro,resultado) => {
                             if(erro){
                                 console.log(erro)
-                                res.status(422).json(erro)
+                                
                             }else{
-                                res.status(201).json(resultado)
+
+                                dadosUser.id =  resultado[resultado.length -1]['id'] + 1
+                                dadosUser.password = await controlUser.gerarSenhaHash(dadosUser.password);
+                                
+                                sql =  'INSERT INTO user SET ?'
+                                
+                                db.query(sql,dadosUser,(erro,resultado) => {
+                                    if(erro){
+                                        console.log(erro)
+                                        res.status(422).json(erro)
+                                    }else{
+                                        io.emit("new_user",dadosUser)
+                                        res.status(201).json(resultado)
+                                    }
+                                })
                             }
                         })
-
                     }else{
                         console.log("Password and Confirm password isn't equals,or length isn't 8")
                         res.status(400).json({message:"Password and Confirm password isn't equals,or length isn't 8"})
@@ -125,7 +136,6 @@ class controlUser{
                 }
             }
         })
-        
     }
 
     static gerarSenhaHash(data){
